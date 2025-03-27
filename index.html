@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Speed Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .test-text {
+      font-size: 1.2rem;
+      color: #555;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      font-size: 1.2rem;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #4CAF50;
+    }
+
+    .stats {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .stats p {
+      font-size: 1.1rem;
+    }
+
+    button {
+      display: block;
+      margin: 0 auto;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Typing Speed Test</h1>
+    <div class="test-text" id="test-text">
+      Type this text as fast as you can. 
+    </div>
+    
+    <textarea id="user-input" placeholder="Start typing here..." oninput="startTypingTest()" disabled></textarea>
+
+    <div class="stats">
+      <p>Time: <span id="time">0</span> seconds</p>
+      <p>WPM (Words per minute): <span id="wpm">0</span></p>
+      <p>Accuracy: <span id="accuracy">100</span>%</p>
+    </div>
+
+    <button id="start-btn" onclick="startTest()">Start Test</button>
+  </div>
+
+  <script>
+    let timer;
+    let startTime;
+    let typingStarted = false;
+    let correctChars = 0;
+    let totalChars = 0;
+
+    const testText = document.getElementById("test-text").textContent;
+    const userInput = document.getElementById("user-input");
+    const startButton = document.getElementById("start-btn");
+    const timeDisplay = document.getElementById("time");
+    const wpmDisplay = document.getElementById("wpm");
+    const accuracyDisplay = document.getElementById("accuracy");
+
+    function startTest() {
+      startButton.disabled = true;
+      userInput.disabled = false;
+      userInput.value = "";
+      userInput.focus();
+      typingStarted = false;
+      correctChars = 0;
+      totalChars = 0;
+      timeDisplay.textContent = "0";
+      wpmDisplay.textContent = "0";
+      accuracyDisplay.textContent = "100";
+
+      startTime = new Date();
+      timer = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      const elapsedTime = Math.floor((new Date() - startTime) / 1000);
+      timeDisplay.textContent = elapsedTime;
+      if (elapsedTime >= 60) {
+        clearInterval(timer);
+        endTest();
+      }
+    }
+
+    function startTypingTest() {
+      if (!typingStarted) {
+        typingStarted = true;
+      }
+
+      const userText = userInput.value;
+      totalChars = userText.length;
+
+      correctChars = countCorrectChars(userText, testText.substring(0, userText.length));
+
+      updateStats();
+    }
+
+    function countCorrectChars(userText, referenceText) {
+      let correct = 0;
+      for (let i = 0; i < userText.length; i++) {
+        if (userText[i] === referenceText[i]) {
+          correct++;
+        }
+      }
+      return correct;
+    }
+
+    function updateStats() {
+      const accuracy = Math.floor((correctChars / totalChars) * 100) || 100;
+      accuracyDisplay.textContent = accuracy;
+
+      const elapsedTime = Math.floor((new Date() - startTime) / 1000);
+      const wpm = Math.floor((totalChars / 5) / (elapsedTime / 60)) || 0;
+      wpmDisplay.textContent = wpm;
+    }
+
+    function endTest() {
+      userInput.disabled = true;
+      startButton.disabled = false;
+      alert("Time's up! Your results are in.");
+    }
+  </script>
+</body>
+</html>
